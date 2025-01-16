@@ -1,50 +1,32 @@
-#include "interval.h"
-#include <algorithm>
+// Мустафина Анна
+// файл с основной программой
+
+#include <iostream>
 #include <vector>
+#include <algorithm>
+#include "interval.h" // Включаем наш заголовочный файл
 
-// Сравнивает два интервала по их начальным точкам
-bool compareIntervals(const Interval& a, const Interval& b) {
-	return a.start < b.start;
-}
+int main() {
+	// Пример входных данных
+	std::vector<Interval> intervals = {
+		{1, 3},
+		{2, 4},
+		{3, 5},
+		{6, 8},
+		{7, 9}
+	};
 
-// Проверяет, пересекаются ли два интервала
-bool isOverlapping(const Interval& a, const Interval& b) {
-	return (a.start < b.end && b.start < a.end);
-}
+	// Сортировка интервалов по начальным точкам
+	std::sort(intervals.begin(), intervals.end(), compareIntervals);
 
-// Алгоритм полного перебора для поиска максимального набора непересекающихся интервалов
-std::vector<Interval> ExhaustiveScheduling(const std::vector<Interval>& intervals) {
-	int n = intervals.size();
-	std::vector<Interval> bestSet;
-	int bestSize = 0;
+	// Вызов алгоритма полного перебора
+	std::vector<Interval> result = ExhaustiveScheduling(intervals);
 
-  // Проходим по всем 2^n подмножествам
-	for (int i = 0; i < (1 << n); i++) {
-		std::vector<Interval> currentSet;
-    // Проверяем каждый интервал, включен ли он в текущее подмножество
-		for (int j = 0; j < n; j++) {
-		if (i & (1 << j)) {
-			currentSet.push_back(intervals[j]);
-			}
-		}
-    // Проверяем, пересекаются ли интервалы в текущем подмножестве
-    bool isNonOverlapping = true;
-    for (int j = 0; j < currentSet.size(); j++) {
-		for (int k = j + 1; k < currentSet.size(); k++) {
-			if (isOverlapping(currentSet[j], currentSet[k])) {
-				isNonOverlapping = false;
-				break;
-			}
-		}
-		if (!isNonOverlapping) {
-			break;
-		}
-    }
-    // Обновляем максимальный набор, если текущий набор не пересекается и больше по размеру
-    if (isNonOverlapping && currentSet.size() > bestSize) {
-		bestSet = currentSet;
-		bestSize = currentSet.size();
-		}
+	// Вывод результата
+	std::cout << "Максимальный набор непересекающихся интервалов:\n";
+	for (const Interval& interval : result) {
+		std::cout << "[" << interval.start << ", " << interval.end << "]\n";
 	}
-	return bestSet;
+	
+	return 0;
 }
